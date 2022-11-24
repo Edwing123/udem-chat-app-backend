@@ -35,14 +35,20 @@ func LoadConfig(path string) (Config, error) {
 // Defines, parses and returns the command line flags.
 func GetFlags() Flags {
 	config := flag.String("config", "", "The path of the configuration file")
+	logs := flag.String("logsDir", "", "The path of the logs dir")
 
 	flag.Parse()
 
 	if *config == "" {
-		log.Fatalln("The flag config is required")
+		log.Fatalln("The flag [config] is required")
+	}
+
+	if *logs == "" {
+		log.Fatalln("The flag [logsDir] is required")
 	}
 
 	return Flags{
-		ConfigPath: *config,
+		ConfigPath:  *config,
+		LogsDirPath: *logs,
 	}
 }

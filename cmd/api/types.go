@@ -18,5 +18,6 @@ type Config struct {
 // Flags represents the command line flags passed
 // to the executable.
 type Flags struct {
-	ConfigPath string // Path of the configuration file.
+	ConfigPath  string // Path of the configuration file.
+	LogsDirPath string // Path of the dir where the logs file will be stored.
 }
