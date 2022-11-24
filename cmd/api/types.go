@@ -22,22 +22,22 @@ type ConnectionDetails struct {
 // Config represents the configuration file.
 type Config struct {
 	// Redis connection details.
-	Redis ConnectionDetails `"json: redis"`
+	Redis ConnectionDetails `json:"redis"`
 
 	// Database connection details.
-	Database ConnectionDetails `"database: redis"`
+	Database ConnectionDetails `json:"database"`
 
 	// Server options.
 	Server struct {
 		// The address where the HTTP will listen on.
 		Addr string
-	} `"json: server"`
+	} `json:"server"`
 
 	// Logs options.
 	Logs struct {
 		// Path of the dir where logs will be stored.
-		Dir string `"json: dir"`
-	} `"json: logs"`
+		Dir string `json:"dir"`
+	} `json:"logs"`
 }
 
 // Flags represents the command line flags passed
