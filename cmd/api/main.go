@@ -30,8 +30,28 @@ func main() {
 		log.Fatalln("failed loading config")
 	}
 
-	_ = config
+	store := NewSessionStore(
+		NewRedisStorage(
+			config.RUser,
+			config.RPassword,
+			config.RHost,
+			config.RPort,
+		),
+	)
 
-	logger.Info("app starts")
-	logger.Info("app ends")
+	defer func() {
+		store.Storage.Close()
+		logger.Info("storage closed")
+	}()
+
+	global := Global{
+		Logger: logger,
+		Store:  store,
+	}
+
+	app := global.Setup()
+
+	logger.Info("server listen", "addr", flags.Addr)
+	err = app.Listen(flags.Addr)
+	logger.Error("server listen", err)
 }

@@ -5,7 +5,14 @@ import (
 	"flag"
 	"log"
 	"os"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 )
+
+func (g *Global) GetSession(c *fiber.Ctx) *session.Session {
+	return c.Locals(SessionKey).(*session.Session)
+}
 
 // Reads the JSON configuration file from the provided
 // file system path, then parses the configuration into
