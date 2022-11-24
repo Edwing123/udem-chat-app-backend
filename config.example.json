@@ -1,0 +1,11 @@
+{
+    "rUser": "foo",
+    "rPassword": "bar",
+    "rPort": 6379,
+    "rHost": "127.0.0.1",
+
+    "dbUser": "foo",
+    "dbPassword": "bar",
+    "dbPort": 1433,
+    "dbHost": "127.0.0.1"
+}
