@@ -36,6 +36,7 @@ func LoadConfig(path string) (Config, error) {
 func GetFlags() Flags {
 	config := flag.String("config", "", "The path of the configuration file")
 	logs := flag.String("logsDir", "", "The path of the logs dir")
+	addr := flag.String("addr", "", "The addr for the server to listen on")
 
 	flag.Parse()
 
@@ -47,8 +48,13 @@ func GetFlags() Flags {
 		log.Fatalln("The flag [logsDir] is required")
 	}
 
+	if *addr == "" {
+		log.Fatalln("The flag [addr] is required")
+	}
+
 	return Flags{
 		ConfigPath:  *config,
 		LogsDirPath: *logs,
+		Addr:        *addr,
 	}
 }
