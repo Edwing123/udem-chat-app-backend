@@ -18,7 +18,7 @@ func (g *Global) GetSession(c *fiber.Ctx) *session.Session {
 // file system path, then parses the configuration into
 // the `Config` struct, and finally returns it with a
 // nill error if everything goes fine. Otherwise, it returns
-// a non-nil error.
+// a non-nil error, which should be checked.
 func LoadConfig(path string) (Config, error) {
 	fd, err := os.Open(path)
 	if err != nil {
@@ -42,8 +42,6 @@ func LoadConfig(path string) (Config, error) {
 // Defines, parses and returns the command line flags.
 func GetFlags() Flags {
 	config := flag.String("config", "", "The path of the configuration file")
-	logs := flag.String("logsDir", "", "The path of the logs dir")
-	addr := flag.String("addr", "", "The addr for the server to listen on")
 
 	flag.Parse()
 
@@ -51,17 +49,7 @@ func GetFlags() Flags {
 		log.Fatalln("The flag [config] is required")
 	}
 
-	if *logs == "" {
-		log.Fatalln("The flag [logsDir] is required")
-	}
-
-	if *addr == "" {
-		log.Fatalln("The flag [addr] is required")
-	}
-
 	return Flags{
-		ConfigPath:  *config,
-		LogsDirPath: *logs,
-		Addr:        *addr,
+		ConfigPath: *config,
 	}
 }

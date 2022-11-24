@@ -1,11 +1,23 @@
 {
-    "rUser": "foo",
-    "rPassword": "bar",
-    "rPort": 6379,
-    "rHost": "127.0.0.1",
+	"redis": {
+		"user": "foo",
+		"password": "bar",
+		"port": 6379,
+		"host": "localhost"
+	},
 
-    "dbUser": "foo",
-    "dbPassword": "bar",
-    "dbPort": 1433,
-    "dbHost": "127.0.0.1"
+	"database": {
+		"user": "foo",
+		"password": "baz",
+		"port": 1433,
+		"host": "localhost"
+	},
+
+    "server": {
+        "addr": ":8080"
+    },
+
+    "logs": {
+        "dir": "./logs"
+    }
 }
