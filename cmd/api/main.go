@@ -51,7 +51,7 @@ func main() {
 
 	app := global.Setup()
 
-	logger.Info("server listen", "addr", flags.Addr)
+	logger.Info("server listen start", "addr", flags.Addr)
 	err = app.Listen(flags.Addr)
-	logger.Error("server listen", err)
+	logger.Error("server listen end", err)
 }
