@@ -1,0 +1,14 @@
+DROP DATABASE [Nameless]
+GO
+
+DROP TABLE IF EXISTS [User_Join_Conversation]
+GO
+
+DROP TABLE IF EXISTS [Message]
+GO
+
+DROP TABLE IF EXISTS [User]
+GO
+
+DROP TABLE IF EXISTS [Conversation]
+GO
