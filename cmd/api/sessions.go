@@ -21,12 +21,12 @@ func NewSessionStore(storage fiber.Storage) *session.Store {
 }
 
 // Creates a storage that stores sessions data to a Redis server.
-func NewRedisStorage(user, password, host string, port uint16) fiber.Storage {
+func NewRedisStorage(details ConnectionDetails) fiber.Storage {
 	redis := redis.New(redis.Config{
-		Host:     host,
-		Port:     int(port),
-		Username: user,
-		Password: password,
+		Host:     details.Host,
+		Port:     int(details.Port),
+		Username: details.User,
+		Password: details.Password,
 	})
 
 	return redis

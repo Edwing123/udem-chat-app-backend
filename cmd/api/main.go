@@ -32,12 +32,7 @@ func main() {
 
 	// Create sessions store.
 	store := NewSessionStore(
-		NewRedisStorage(
-			config.Redis.User,
-			config.Redis.Password,
-			config.Redis.Host,
-			config.Redis.Port,
-		),
+		NewRedisStorage(config.Redis),
 	)
 
 	// Remember to close the store's underlying storage.
