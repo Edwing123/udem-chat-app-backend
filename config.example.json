@@ -17,7 +17,5 @@
         "addr": ":8080"
     },
 
-    "logs": {
-        "dir": "./logs"
-    }
+    "appdata": "./foo"
 }

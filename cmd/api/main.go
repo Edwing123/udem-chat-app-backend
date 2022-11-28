@@ -18,7 +18,11 @@ func main() {
 	}
 
 	// Create logs file.
-	logsFileName := path.Join(config.Logs.Dir, time.Now().Format(time.RFC3339))
+	logsFileName := path.Join(
+		config.AppData,
+		"logs",
+		time.Now().Format(time.RFC3339),
+	)
 
 	logsFile, err := os.Create(logsFileName)
 	if err != nil {
