@@ -1,3 +1,5 @@
 /run.sh
 /config.dev.json
 /logs
+/docker.sh
+/appdata
