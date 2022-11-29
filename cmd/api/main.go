@@ -32,6 +32,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Create appdata directories.
+	err = CreateAppDataDirs(config.AppData)
+	if err != nil {
+		fmt.Println("An error occured while creating appdata dirs:")
+		fmt.Println()
+
+		fmt.Println(err)
+
+		fmt.Println()
+		os.Exit(1)
+	}
+
 	// Create logs file.
 	logsFileName := path.Join(
 		config.AppData,
