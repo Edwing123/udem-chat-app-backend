@@ -13,11 +13,16 @@ CREATE TABLE [User] (
     -- long because the plain text password will be
     -- hashed using the hashing algorithm Bcrypt.
     [Password] CHAR(60) NOT NULL,
+
     [BirthDate] DATE NOT NULL,
 
-    -- a UUID is used for unique id values,
-    -- and it has a size of 16 bytes.
+    -- a UUID has a size of 16 bytes.
     [Profile_Picture_Id] CHAR(16) NOT NULL UNIQUE,
+
+    -- a UUID has a size of 16 bytes.
+    -- This is the id of the original picture,
+    -- the one without cropping.
+    [Original_Profile_Picture_Id] CHAR(16) NOT NULL UNIQUE,
 
     -- Username must not be empty.
     CONSTRAINT [Check_User_Name_Not_Empty] CHECK (LEN(Name) > 0)
@@ -26,6 +31,7 @@ GO
 
 CREATE TABLE [Conversation] (
     [Id] INT IDENTITY(1, 1) PRIMARY KEY,
+
     [Created_At] DATETIME NOT NULL,
 
     -- The duration of the conversation in seconds.
@@ -38,11 +44,14 @@ GO
 
 CREATE TABLE [Message] (
     [Id] INT IDENTITY(1, 1) PRIMARY KEY,
+
     [Created_At] DATETIME NOT NULL,
 
     -- The maximum of characters per message.
     [Content] NVARCHAR(300) NOT NULL,
+
     [User_Id] INT NOT NULL,
+
     [Conversation_Id] INT NOT NULL,
 
     -- Foreigh key references.
@@ -56,10 +65,12 @@ GO
 
 CREATE TABLE [User_Join_Conversation] (
     [Id] INT IDENTITY(1, 1) PRIMARY KEY,
+
     [User_Id] INT NOT NULL,
+
     [Conversation_Id] INT NOT NULL,
 
     -- Foreigh key references.
     CONSTRAINT [Foreign_User_Join_Conversation_User_Id] FOREIGN KEY [User](Id),
-    CONSTRAINT [Foreign_User_Join_Conversation_Conversation_Id] FOREIGN KEY [Conversation](Id),
+    CONSTRAINT [Foreign_User_Join_Conversation_Conversation_Id] FOREIGN KEY [Conversation](Id)
 )
