@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path"
@@ -14,7 +15,21 @@ func main() {
 	// Load configuration.
 	config, err := LoadConfig(flags.ConfigPath)
 	if err != nil {
-		log.Fatalln("failed loading config")
+		log.Fatalln("failed loading config: ", err)
+	}
+
+	// Validate the configuration.
+	configValidationErrors := ValidateConfig(config)
+	if configValidationErrors != nil {
+		fmt.Println("Configuration validation failed with the following errors:")
+		fmt.Println()
+
+		for _, err := range configValidationErrors {
+			fmt.Printf("\t- %s\n", err)
+		}
+
+		fmt.Println()
+		os.Exit(1)
 	}
 
 	// Create logs file.
