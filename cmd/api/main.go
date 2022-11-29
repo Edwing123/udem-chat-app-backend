@@ -80,9 +80,12 @@ func main() {
 	app := global.Setup()
 	addr := config.Server.Addr
 
-	logger.Info("server listen start", "addr", addr)
+	app.Hooks().OnListen(func() error {
+		logger.Info("server listen start", "addr", addr)
+		return nil
+	})
 
 	err = app.Listen(addr)
 
-	logger.Error("server listen end", err)
+	logger.Error("server listen fail", err)
 }
