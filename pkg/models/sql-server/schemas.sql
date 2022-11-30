@@ -19,11 +19,6 @@ CREATE TABLE [User] (
     -- a UUID has a size of 16 bytes.
     [Profile_Picture_Id] CHAR(16) NOT NULL UNIQUE,
 
-    -- a UUID has a size of 16 bytes.
-    -- This is the id of the original picture,
-    -- the one without cropping.
-    [Original_Profile_Picture_Id] CHAR(16) NOT NULL UNIQUE,
-
     -- Username must not be empty.
     CONSTRAINT [Check_User_Name_Not_Empty] CHECK (LEN(Name) > 0)
 )
