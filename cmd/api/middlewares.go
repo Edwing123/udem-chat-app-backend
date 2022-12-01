@@ -1,12 +1,32 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/Edwing123/udem-chat-app/pkg/codes"
+	"github.com/gofiber/fiber/v2"
+)
 
 const (
 	SessionKey    string = "session_key"
 	UserIdKey     string = "user_id_key"
 	IsLoggedInKey string = "is_logged_in"
 )
+
+// Calls the next handler only if the user is logged in.
+func (g *Global) RequireAuth(c *fiber.Ctx) error {
+	sess := g.GetSession(c)
+	isLoggedIn, ok := sess.Get(IsLoggedInKey).(bool)
+
+	if !isLoggedIn || !ok {
+		return SendErrorMessage(
+			c,
+			fiber.StatusUnauthorized,
+			codes.ErrAuthRequired,
+			"Autenticacion requerida",
+		)
+	}
+
+	return c.Next()
+}
 
 // This middleware has the following responsabilities:
 // - Create/Get a session for the request.
