@@ -3,7 +3,9 @@ package main
 import "github.com/gofiber/fiber/v2"
 
 const (
-	SessionKey string = "session_key"
+	SessionKey    string = "session_key"
+	UserIdKey     string = "user_id_key"
+	IsLoggedInKey string = "is_logged_in"
 )
 
 // This middleware has the following responsabilities:

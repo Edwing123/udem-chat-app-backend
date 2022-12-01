@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/Edwing123/udem-chat-app/pkg/codes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 )
@@ -20,14 +21,15 @@ func (g *Global) GetSession(c *fiber.Ctx) *session.Session {
 
 // Helper function to create server errors.
 func (g *Global) ServerError(c *fiber.Ctx, err error) error {
-	return SendErrorMessage(c, fiber.StatusInternalServerError, err)
+	return SendErrorMessage(c, fiber.StatusInternalServerError, codes.ErrServerInternal, err)
 }
 
 // Helper function to create error response message.
-func SendErrorMessage(c *fiber.Ctx, status int, err error) error {
-	return c.Status(status).JSON(ErrorMessage{
-		Ok:  false,
-		Err: err,
+func SendErrorMessage[T any](c *fiber.Ctx, status int, err error, details T) error {
+	return c.Status(status).JSON(ErrorMessage[T]{
+		Ok:      false,
+		Err:     err,
+		Details: details,
 	})
 }
 

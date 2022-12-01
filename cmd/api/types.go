@@ -15,9 +15,10 @@ type Global struct {
 }
 
 // Represents a bad response.
-type ErrorMessage struct {
-	Ok  bool  `json:"ok"`
-	Err error `json:"err"`
+type ErrorMessage[T any] struct {
+	Ok      bool  `json:"ok"`
+	Err     error `json:"err"`
+	Details T     `json:"details,omitempty"`
 }
 
 // Represents a success response.
