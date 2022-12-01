@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/Edwing123/udem-chat-app/pkg/codes"
@@ -133,6 +134,8 @@ func (um *UserManager) Login(user models.User) (int, error) {
 }
 
 func (um *UserManager) Update(id int, user models.User) error {
+	log.Printf("%+v\n", user)
+
 	// Only update non-empty fields.
 	fieldsToUpdate := []string{}
 	values := []any{}
@@ -156,6 +159,11 @@ func (um *UserManager) Update(id int, user models.User) error {
 	if user.ProfilePictureId != "" {
 		fieldsToUpdate = append(fieldsToUpdate, fmt.Sprintf("%s = @%s", userProfilePictureId, userProfilePictureId))
 		values = append(values, sql.Named(userProfilePictureId, user.ProfilePictureId))
+	}
+
+	// If all update-able fields are empty.
+	if len(fieldsToUpdate) < 1 {
+		return codes.ErrNoUpdatesToPerform
 	}
 
 	query := fmt.Sprintf(
