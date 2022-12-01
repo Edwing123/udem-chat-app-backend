@@ -2,11 +2,11 @@ package hashing
 
 import "golang.org/x/crypto/bcrypt"
 
-// HashPassword creates the bcrypt hash of the password at the given cost.
+// HashPassword creates the bcrypt hash of the password.
 // On success it returns the hashed password and a nil error, and on failure,
 // it returns a nil hashed password and non-nil error.
-func HashPassword(password []byte, cost int) ([]byte, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword(password, cost)
+func HashPassword(password []byte) ([]byte, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword(password, 12)
 	if err != nil {
 		return nil, err
 	}
