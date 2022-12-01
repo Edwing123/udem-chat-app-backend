@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/Edwing123/udem-chat-app/pkg/images/profile"
+	sqlserver "github.com/Edwing123/udem-chat-app/pkg/models/sql-server"
+	_ "github.com/microsoft/go-mssqldb"
 )
 
 func main() {
@@ -87,10 +89,27 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Create connection to SQL Server database.
+	sqldb, err := NewSQLServerDatabase(config.Database)
+	if err != nil {
+		fmt.Println("An error occured while connecting to sql server database:")
+		fmt.Println()
+
+		fmt.Println(err)
+
+		fmt.Println()
+		os.Exit(1)
+	}
+
+	// Create an implementation of `models.Database` using
+	// SQL Server as the database.
+	databaseImpl := sqlserver.New(sqldb)
+
 	global := Global{
 		Logger:         logger,
 		Store:          store,
 		ProfileManager: &profileManager,
+		Database:       &databaseImpl,
 	}
 
 	app := global.Setup()
