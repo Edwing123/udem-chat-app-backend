@@ -23,6 +23,9 @@ func (g *Global) Setup() *fiber.App {
 		g.ManageSession,
 	)
 
+	// Define profile images route.
+	app.Get("/images/profile/:id<guid>", g.ProfileManager.ServeImage)
+
 	// Group API endpoints under the same group.
 	api := app.Group("/api")
 

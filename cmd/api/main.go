@@ -6,6 +6,8 @@ import (
 	"os"
 	"path"
 	"time"
+
+	"github.com/Edwing123/udem-chat-app/pkg/images/profile"
 )
 
 func main() {
@@ -72,9 +74,23 @@ func main() {
 		logger.Info("storage closed")
 	}()
 
+	// Setup profile manager.
+	profileManager := profile.New(path.Join(config.AppData, "images"))
+	err = profileManager.InitDirs()
+	if err != nil {
+		fmt.Println("An error occured while creating profile manager dirs:")
+		fmt.Println()
+
+		fmt.Println(err)
+
+		fmt.Println()
+		os.Exit(1)
+	}
+
 	global := Global{
-		Logger: logger,
-		Store:  store,
+		Logger:         logger,
+		Store:          store,
+		ProfileManager: &profileManager,
 	}
 
 	app := global.Setup()
