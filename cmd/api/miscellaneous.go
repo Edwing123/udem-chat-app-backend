@@ -18,6 +18,39 @@ func (g *Global) GetSession(c *fiber.Ctx) *session.Session {
 	return c.Locals(SessionKey).(*session.Session)
 }
 
+// Helper function to create server errors.
+func (g *Global) ServerError(c *fiber.Ctx, err error) error {
+	return SendErrorMessage(c, fiber.StatusInternalServerError, err)
+}
+
+// Helper function to create error response message.
+func SendErrorMessage(c *fiber.Ctx, status int, err error) error {
+	return c.Status(status).JSON(ErrorMessage{
+		Ok:  false,
+		Err: err,
+	})
+}
+
+// Helper function to create response sucess message.
+func SendSucessMessage[T any](c *fiber.Ctx, status int, data T) error {
+	return c.Status(status).JSON(SuccessMessage[T]{
+		Ok:   true,
+		Data: data,
+	})
+}
+
+// Parses the body of the request.
+func ReadJSONBody[T any](c *fiber.Ctx) (T, error) {
+	var v T
+
+	err := c.BodyParser(&v)
+	if err != nil {
+		return v, err
+	}
+
+	return v, nil
+}
+
 // Reads the JSON configuration file from the provided
 // file system path, then parses the configuration into
 // the `Config` struct, and finally returns it with a

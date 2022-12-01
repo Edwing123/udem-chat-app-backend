@@ -14,6 +14,18 @@ type Global struct {
 	Database       *models.Database
 }
 
+// Represents a bad response.
+type ErrorMessage struct {
+	Ok  bool  `json:"ok"`
+	Err error `json:"err"`
+}
+
+// Represents a success response.
+type SuccessMessage[T any] struct {
+	Ok   bool `json:"ok"`
+	Data T    `json:"data"`
+}
+
 // ConnectionDetails represents the information
 // needed to connect to database server.
 type ConnectionDetails struct {
