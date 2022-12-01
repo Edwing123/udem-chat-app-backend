@@ -14,7 +14,7 @@ CREATE TABLE [User] (
     -- hashed using the hashing algorithm Bcrypt.
     [Password] CHAR(60) NOT NULL,
 
-    [BirthDate] DATE NOT NULL,
+    [Birthdate] DATE NOT NULL,
 
     -- a UUID has a size of 16 bytes.
     [Profile_Picture_Id] CHAR(16) NOT NULL UNIQUE,
