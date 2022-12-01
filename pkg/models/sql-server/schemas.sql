@@ -50,8 +50,8 @@ CREATE TABLE [Message] (
     [Conversation_Id] INT NOT NULL,
 
     -- Foreigh key references.
-    CONSTRAINT [Foreign_Message_User_Id] FOREIGN KEY [User](Id),
-    CONSTRAINT [Foreign_Message_Conversation_Id] FOREIGN KEY [Conversation](Id),
+    CONSTRAINT [Foreign_Message_User_Id] FOREIGN KEY (User_Id) REFERENCES [User](Id),
+    CONSTRAINT [Foreign_Message_Conversation_Id] FOREIGN KEY (Conversation_Id) REFERENCES [Conversation](Id),
 
     -- The message must not be empty.
     CONSTRAINT [Check_Message_Content_Not_Empty] CHECK (LEN(Content) > 0)
@@ -66,6 +66,6 @@ CREATE TABLE [User_Join_Conversation] (
     [Conversation_Id] INT NOT NULL,
 
     -- Foreigh key references.
-    CONSTRAINT [Foreign_User_Join_Conversation_User_Id] FOREIGN KEY [User](Id),
-    CONSTRAINT [Foreign_User_Join_Conversation_Conversation_Id] FOREIGN KEY [Conversation](Id)
+    CONSTRAINT [Foreign_User_Join_Conversation_User_Id] FOREIGN KEY (User_Id) REFERENCES [User](Id),
+    CONSTRAINT [Foreign_User_Join_Conversation_Conversation_Id] FOREIGN KEY (Conversation_Id) REFERENCES [Conversation](Id)
 )
