@@ -42,10 +42,6 @@ func (um *UserManager) New(user models.User) error {
 		return codes.ErrUserPasswordEmpty
 	}
 
-	if user.ProfilePictureId == "" {
-		return codes.ErrUserProfilePictureIdEmpty
-	}
-
 	if user.Birthdate == "" {
 		return codes.ErrUserBirtdateEmpty
 	}
