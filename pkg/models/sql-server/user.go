@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Edwing123/udem-chat-app/pkg/codes"
 	"github.com/Edwing123/udem-chat-app/pkg/models"
 	"github.com/Edwing123/udem-chat-app/pkg/validations/hashing"
 )
@@ -27,26 +28,26 @@ func (um *UserManager) UserNameAlreadyExists(name string) error {
 	// If the err is not nil, that means there's alredy a user
 	// with the same name.
 	if err == nil {
-		return models.ErrUserNameAlreadyExists
+		return codes.ErrUserNameAlreadyExists
 	}
 
 	return nil
 }
 func (um *UserManager) New(user models.User) error {
 	if user.Name == "" {
-		return models.ErrUserNameEmpty
+		return codes.ErrUserNameEmpty
 	}
 
 	if user.Password == "" {
-		return models.ErrUserPasswordEmpty
+		return codes.ErrUserPasswordEmpty
 	}
 
 	if user.ProfilePictureId == "" {
-		return models.ErrUserProfilePictureIdEmpty
+		return codes.ErrUserProfilePictureIdEmpty
 	}
 
 	if user.Birthdate == "" {
-		return models.ErrUserBirtdateEmpty
+		return codes.ErrUserBirtdateEmpty
 	}
 
 	// Let's check if there is already a user with the same name.
@@ -58,7 +59,7 @@ func (um *UserManager) New(user models.User) error {
 	// Hash the password.
 	hashedPassword, err := hashing.HashPassword([]byte(user.Password))
 	if err != nil {
-		return models.ErrPasswordHashingFail
+		return codes.ErrPasswordHashingFail
 	}
 
 	_, err = um.db.ExecContext(
@@ -70,7 +71,7 @@ func (um *UserManager) New(user models.User) error {
 		sql.Named(userProfilePictureId, user.ProfilePictureId),
 	)
 	if err != nil {
-		return models.ErrDatabaseFail
+		return codes.ErrDatabaseFail
 	}
 
 	return nil
@@ -93,10 +94,10 @@ func (um *UserManager) Get(id int) (models.User, error) {
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return user, models.ErrNoRecords
+			return user, codes.ErrNoRecords
 		}
 
-		return user, models.ErrDatabaseFail
+		return user, codes.ErrDatabaseFail
 	}
 
 	return user, nil
@@ -104,7 +105,7 @@ func (um *UserManager) Get(id int) (models.User, error) {
 
 func (um *UserManager) Login(user models.User) (int, error) {
 	if user.Name == "" || user.Password == "" {
-		return 0, models.ErrLoginFail
+		return 0, codes.ErrLoginFail
 	}
 
 	var id int
@@ -122,15 +123,15 @@ func (um *UserManager) Login(user models.User) (int, error) {
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return 0, models.ErrLoginFail
+			return 0, codes.ErrLoginFail
 		}
 
-		return 0, models.ErrDatabaseFail
+		return 0, codes.ErrDatabaseFail
 	}
 
 	isPasswordValid := hashing.VerifyPassword([]byte(hashedPassword), []byte(user.Password))
 	if !isPasswordValid {
-		return 0, models.ErrLoginFail
+		return 0, codes.ErrLoginFail
 	}
 
 	return id, nil
@@ -175,7 +176,7 @@ func (um *UserManager) Update(id int, user models.User) error {
 		values...,
 	)
 	if err != nil {
-		return models.ErrDatabaseFail
+		return codes.ErrDatabaseFail
 	}
 
 	return nil
@@ -193,20 +194,20 @@ func (um *UserManager) ChangePassword(id int, currentPass, newPass string) error
 	err := row.Scan(&hashedPassword)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.ErrNoRecords
+			return codes.ErrNoRecords
 		}
 
-		return models.ErrDatabaseFail
+		return codes.ErrDatabaseFail
 	}
 
 	isValidPassword := hashing.VerifyPassword([]byte(hashedPassword), []byte(currentPass))
 	if !isValidPassword {
-		return models.ErrPasswordsMismatch
+		return codes.ErrPasswordsMismatch
 	}
 
 	newPassHashed, err := hashing.HashPassword([]byte(newPass))
 	if err != nil {
-		return models.ErrPasswordHashingFail
+		return codes.ErrPasswordHashingFail
 	}
 
 	_, err = um.db.ExecContext(
@@ -215,7 +216,7 @@ func (um *UserManager) ChangePassword(id int, currentPass, newPass string) error
 		sql.Named(userPassword, string(newPassHashed)),
 	)
 	if err != nil {
-		return models.ErrDatabaseFail
+		return codes.ErrDatabaseFail
 	}
 
 	return nil
