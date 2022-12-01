@@ -1,21 +1,33 @@
 package codes
 
-import "errors"
+func NewCode(description string) Code {
+	return Code(description)
+}
+
+// Represents an error code.
+type Code string
+
+// It implements the error interface.
+func (c Code) Error() string {
+	return string(c)
+}
 
 var (
-	ErrUserNameAlreadyExists     = errors.New("user_name_already_exists")
-	ErrUserNameEmpty             = errors.New("user_name_empty")
-	ErrUserPasswordEmpty         = errors.New("user_password_empty")
-	ErrUserBirtdateEmpty         = errors.New("user_birthdate_empty")
-	ErrUserProfilePictureIdEmpty = errors.New("user_profile_picture_id_empty")
-	ErrPasswordsMismatch         = errors.New("current_password_new_password_mismatch")
+	ErrUserNameAlreadyExists     = NewCode("user_name_already_exists")
+	ErrUserNameEmpty             = NewCode("user_name_empty")
+	ErrUserPasswordEmpty         = NewCode("user_password_empty")
+	ErrUserBirtdateEmpty         = NewCode("user_birthdate_empty")
+	ErrUserProfilePictureIdEmpty = NewCode("user_profile_picture_id_empty")
+	ErrPasswordsMismatch         = NewCode("current_password_new_password_mismatch")
 
-	ErrNoRecords           = errors.New("no_records")
-	ErrLoginFail           = errors.New("login_fail")
-	ErrDatabaseFail        = errors.New("database_fail")
-	ErrPasswordHashingFail = errors.New("password_hashing_fail")
+	ErrNoRecords           = NewCode("no_records")
+	ErrLoginFail           = NewCode("login_fail")
+	ErrDatabaseFail        = NewCode("database_fail")
+	ErrPasswordHashingFail = NewCode("password_hashing_fail")
 
-	ErrNotLoggedIn    = errors.New("not_logged_in")
-	ErrServerInternal = errors.New("server_internal")
-	ErrClient         = errors.New("client_error")
+	ErrNotLoggedIn      = NewCode("not_logged_in")
+	ErrServerInternal   = NewCode("server_internal")
+	ErrClient           = NewCode("client_error")
+	ErrPasswordNotValid = NewCode("password_not_valid")
+	ErrAuthRequired     = NewCode("auth_required")
 )
