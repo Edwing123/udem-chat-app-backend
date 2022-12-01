@@ -10,8 +10,8 @@ var (
 
 const (
 	insertUser = `
-	INSERT INTO [User] ([Name], [Password], [Birthdate], [Profile_Picture_Id])
-	VALUES(@Name, @Password, @Birthdate, @Profile_Picture_Id);
+	INSERT INTO [User] ([Name], [Password], [Birthdate])
+	VALUES(@Name, @Password, @Birthdate);
 	`
 
 	getUserById = `

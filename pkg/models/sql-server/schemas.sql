@@ -17,7 +17,7 @@ CREATE TABLE [User] (
     [Birthdate] DATE NOT NULL,
 
     -- a UUID has a size of 16 bytes.
-    [Profile_Picture_Id] CHAR(16) NOT NULL UNIQUE,
+    [Profile_Picture_Id] CHAR(16) UNIQUE DEFAULT '',
 
     -- Username must not be empty.
     CONSTRAINT [Check_User_Name_Not_Empty] CHECK (LEN(Name) > 0)

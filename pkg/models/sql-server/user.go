@@ -64,7 +64,6 @@ func (um *UserManager) New(user models.User) error {
 		sql.Named(userName, user.Name),
 		sql.Named(userPassword, string(hashedPassword)),
 		sql.Named(userBirthdate, user.Birthdate),
-		sql.Named(userProfilePictureId, user.ProfilePictureId),
 	)
 	if err != nil {
 		return codes.ErrDatabaseFail
