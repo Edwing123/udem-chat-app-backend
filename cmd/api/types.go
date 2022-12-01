@@ -1,13 +1,15 @@
 package main
 
 import (
+	"github.com/Edwing123/udem-chat-app/pkg/images/profile"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"golang.org/x/exp/slog"
 )
 
 type Global struct {
-	Logger *slog.Logger
-	Store  *session.Store
+	Logger         *slog.Logger
+	Store          *session.Store
+	ProfileManager *profile.Manager
 }
 
 // ConnectionDetails represents the information
