@@ -29,6 +29,12 @@ func (g *Global) Setup() *fiber.App {
 	// Group API endpoints under the same group.
 	api := app.Group("/api")
 
+	user := api.Group("/user")
+	user.Post("/login", g.UserLogIn)
+	user.Post("/signup", g.UserSignUp)
+	user.Post("/logout", g.RequireAuth, g.UserLogout)
+	user.Post("/status", g.UserStatus)
+
 	// TODO: remove later.
 	api.Get("/hello", func(c *fiber.Ctx) error {
 		sess := g.GetSession(c)
