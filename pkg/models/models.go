@@ -7,3 +7,7 @@ type User struct {
 	Birthdate        string `json:"birthdate,omitempty"`
 	ProfilePictureId string `json:"profilePictureId,omitempty"`
 }
+
+type Database struct {
+	UserManager UserManager
+}
