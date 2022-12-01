@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/Edwing123/udem-chat-app/pkg/codes"
 	"github.com/gofiber/fiber/v2"
@@ -51,6 +52,28 @@ func ReadJSONBody[T any](c *fiber.Ctx) (T, error) {
 	}
 
 	return v, nil
+}
+
+func ValidatePassword(password string) error {
+	// Trim leading and trailing whitespace.
+	password = strings.Trim(password, " ")
+
+	// Must have 8 character or more.
+	if len(password) <= 8 {
+		return codes.ErrPasswordNotValid
+	}
+
+	// Must have at least one digit.
+	if !strings.ContainsAny(password, "0123456789") {
+		return codes.ErrPasswordNotValid
+	}
+
+	// Must have at least one special character.
+	if !strings.ContainsAny(password, "@$#") {
+		return codes.ErrPasswordNotValid
+	}
+
+	return nil
 }
 
 // Reads the JSON configuration file from the provided
