@@ -20,8 +20,6 @@ The package `bimg` is used for image processing, and behind the scenes it uses a
 -   libvips.
 -   libvips-dev (dev version of libvips).
 -   pkg-config (needed by cgo to find information about libraries).
--   libheif (needed by libvips).
--   libheif-dev (needed by libvips).
 -   build-essentials or alpine-sdk (AlpineOS doesn't have build-essentials)
 
 ## Create the configuration file
