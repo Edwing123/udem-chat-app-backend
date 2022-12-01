@@ -82,7 +82,7 @@ func (g *Global) UserSignUp(c *fiber.Ctx) error {
 }
 
 // Handler for getting the status of the user.
-// whether or not its' logged-in.
+// whether or not it's logged-in.
 func (g *Global) UserStatus(c *fiber.Ctx) error {
 	sess := g.GetSession(c)
 	userId, ok := sess.Get(UserIdKey).(int)
