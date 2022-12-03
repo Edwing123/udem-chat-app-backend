@@ -107,7 +107,7 @@ func (g *Global) UserStatus(c *fiber.Ctx) error {
 func (g *Global) UserUpdate(c *fiber.Ctx) error {
 	var updateImage bool
 
-	imageFile, err := c.FormFile("profileImage")
+	imageFile, err := c.FormFile("profilePicture")
 	if err == nil {
 		updateImage = true
 	}
@@ -152,7 +152,7 @@ func (g *Global) UserUpdate(c *fiber.Ctx) error {
 		// Read the image data.
 		imageFile, err := imageFile.Open()
 		if err != nil {
-			g.Logger.Error("Open profile image", err)
+			g.Logger.Error("Open profile picture", err)
 			return g.ServerError(
 				c,
 				nil,
@@ -162,7 +162,7 @@ func (g *Global) UserUpdate(c *fiber.Ctx) error {
 
 		imageBuffer, err := ioutil.ReadAll(imageFile)
 		if err != nil {
-			g.Logger.Error("Read profile image", err)
+			g.Logger.Error("Read profile picture", err)
 			return g.ServerError(
 				c,
 				nil,
@@ -189,7 +189,7 @@ func (g *Global) UserUpdate(c *fiber.Ctx) error {
 					c,
 					fiber.StatusBadRequest,
 					err,
-					"La imagen no puede ser procesada",
+					"La imagen no puede ser procesada, elija otra porfavor",
 				)
 			}
 
