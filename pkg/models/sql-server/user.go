@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/Edwing123/udem-chat-app/pkg/models"
 	"github.com/Edwing123/udem-chat-app/pkg/validations/hashing"
@@ -30,6 +31,11 @@ func isUserProfilePictureIdexistsError(err error) bool {
 	return strings.Contains(sqlErr.Message, "Unique_User_Profile_Picture_Id")
 }
 
+func isValidBirthdateFormat(birthdate string) bool {
+	_, err := time.Parse(models.UserBirthdateFormat, birthdate)
+	return err == nil
+}
+
 func (um *UserManager) New(user models.User) error {
 	var err error
 
@@ -44,9 +50,15 @@ func (um *UserManager) New(user models.User) error {
 	case user.Password == "":
 		err = models.ErrUserPasswordEmpty
 
-	// Birthdate is assumed to be in the right format, in this case, that is: yyyy-mm-dd
 	case user.Birthdate == "":
 		err = models.ErrUserBirthdateEmpty
+
+	case !isValidBirthdateFormat(user.Birthdate):
+		err = models.ErrUserBirthdateBadFormat
+	}
+
+	if err != nil {
+		return err
 	}
 
 	// Hash the password.
@@ -156,16 +168,28 @@ func (um *UserManager) Update(id int, user models.User) (models.User, error) {
 	values := []any{}
 
 	if user.Name != "" {
+		if len(user.Name) > models.UserNameMaxLength {
+			return models.User{}, models.ErrUserNameExceedsMaxLength
+		}
+
 		fieldsToUpdate = append(fieldsToUpdate, fmt.Sprintf("%s = @%s", userName, userName))
 		values = append(values, sql.Named(userName, user.Name))
 	}
 
 	if user.Birthdate != "" {
+		if !isValidBirthdateFormat(user.Birthdate) {
+			return models.User{}, models.ErrUserBirthdateBadFormat
+		}
+
 		fieldsToUpdate = append(fieldsToUpdate, fmt.Sprintf("%s = @%s", userBirthdate, userBirthdate))
 		values = append(values, sql.Named(userBirthdate, user.Birthdate))
 	}
 
 	if user.ProfilePictureId != "" {
+		if len(user.ProfilePictureId) > models.UserProfilePictureIdLength {
+			return models.User{}, models.ErrUserProfilePictureIdNotValidLength
+		}
+
 		fieldsToUpdate = append(fieldsToUpdate, fmt.Sprintf("%s = @%s", userProfilePictureId, userProfilePictureId))
 		values = append(values, sql.Named(userProfilePictureId, user.ProfilePictureId))
 	}
