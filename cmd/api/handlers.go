@@ -249,3 +249,17 @@ func (g *Global) UserUpdate(c *fiber.Ctx) error {
 
 	return SendSucessMessage(c, fiber.StatusOK, updatedUser)
 }
+
+// Handler for getting the information
+// of the logged-in user.
+func (g *Global) UserGet(c *fiber.Ctx) error {
+	sess := g.GetSession(c)
+	id := sess.Get(UserIdKey).(int)
+
+	user, err := g.Database.UserManager.Get(id)
+	if err != nil {
+		return g.ServerError(c, nil)
+	}
+
+	return SendSucessMessage(c, fiber.StatusOK, user)
+}
