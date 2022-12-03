@@ -75,7 +75,6 @@ func (pm *Manager) InitDirs() error {
 }
 
 const (
-	sizeLimit   = 1024 * 400 // 400KB
 	activeDir   = "active"
 	archiveDir  = "archive"
 	originalDir = "original"
@@ -97,17 +96,10 @@ func (pm *Manager) New(image Image, crop Crop) (string, error) {
 		return "", ErrImageTypeNotSupported
 	}
 
-	// Optimize the image only if the size is greater than max size,
-	// then save the original image.
-	var originalImageBuffer []byte
-	var err error
-
-	if len(image.Buffer) > sizeLimit {
-		originalImageBuffer, err = pm.process(image.Buffer, defaultProcessOptions)
-		if err != nil {
-			pm.logger.Error("Process original image", err, "imageType", image.Type)
-			return "", ErrImageProcessFail
-		}
+	originalImageBuffer, err := pm.process(image.Buffer, defaultProcessOptions)
+	if err != nil {
+		pm.logger.Error("Process original image", err, "imageType", image.Type)
+		return "", ErrImageProcessFail
 	}
 
 	// Create a unique id for the image.
