@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -160,16 +159,14 @@ func (um *UserManager) Login(user models.User) (int, error) {
 	return userId, nil
 }
 
-func (um *UserManager) Update(id int, user models.User) (models.User, error) {
-	log.Printf("%+v\n", user)
-
+func (um *UserManager) Update(id int, user models.User) (models.User, string, error) {
 	// Only update non-empty fields.
 	fieldsToUpdate := []string{}
 	values := []any{}
 
 	if user.Name != "" {
 		if len(user.Name) > models.UserNameMaxLength {
-			return models.User{}, models.ErrUserNameExceedsMaxLength
+			return models.User{}, "", models.ErrUserNameExceedsMaxLength
 		}
 
 		fieldsToUpdate = append(fieldsToUpdate, fmt.Sprintf("%s = @%s", userName, userName))
@@ -178,7 +175,7 @@ func (um *UserManager) Update(id int, user models.User) (models.User, error) {
 
 	if user.Birthdate != "" {
 		if !isValidBirthdateFormat(user.Birthdate) {
-			return models.User{}, models.ErrUserBirthdateBadFormat
+			return models.User{}, "", models.ErrUserBirthdateBadFormat
 		}
 
 		fieldsToUpdate = append(fieldsToUpdate, fmt.Sprintf("%s = @%s", userBirthdate, userBirthdate))
@@ -187,7 +184,7 @@ func (um *UserManager) Update(id int, user models.User) (models.User, error) {
 
 	if user.ProfilePictureId != "" {
 		if len(user.ProfilePictureId) > models.UserProfilePictureIdLength {
-			return models.User{}, models.ErrUserProfilePictureIdNotValidLength
+			return models.User{}, "", models.ErrUserProfilePictureIdNotValidLength
 		}
 
 		fieldsToUpdate = append(fieldsToUpdate, fmt.Sprintf("%s = @%s", userProfilePictureId, userProfilePictureId))
@@ -197,7 +194,7 @@ func (um *UserManager) Update(id int, user models.User) (models.User, error) {
 	// If all update-able fields are empty, then return an error to notify
 	// that no updates were performed.
 	if len(fieldsToUpdate) == 0 {
-		return models.User{}, models.ErrNoUpdates
+		return models.User{}, "", models.ErrNoUpdates
 	}
 
 	// Otherwise, build the query with the columns
@@ -209,7 +206,30 @@ func (um *UserManager) Update(id int, user models.User) (models.User, error) {
 
 	values = append(values, sql.Named(userId, id))
 
-	_, err := um.db.ExecContext(
+	tx, err := um.db.BeginTx(rootCtx, &sql.TxOptions{})
+	if err != nil {
+		um.logger.Error("Update user - begin transaction", err, "details")
+		return models.User{}, "", models.ErrDatabaseServerFail
+	}
+	defer tx.Rollback()
+
+	// Get current profile picture id only
+	// if it's meant to be updated, that is,
+	// the value for user.ProfilePictureId is
+	// not empty.
+	var oldImageId string
+
+	if user.ProfilePictureId != "" {
+		row := tx.QueryRowContext(rootCtx, getUserProfilePictureIdById, sql.Named(userId, id))
+
+		err = row.Scan(&oldImageId)
+		if err != nil {
+			um.logger.Error("Update user - select current picture id", err)
+			return models.User{}, "", models.ErrDatabaseServerFail
+		}
+	}
+
+	_, err = tx.ExecContext(
 		rootCtx,
 		query,
 		values...,
@@ -230,10 +250,16 @@ func (um *UserManager) Update(id int, user models.User) (models.User, error) {
 			)
 		}
 
-		return models.User{}, err
+		return models.User{}, "", err
 	}
 
-	return user, nil
+	err = tx.Commit()
+	if err != nil {
+		um.logger.Error("Update user - close transaction", err)
+		return models.User{}, "", models.ErrDatabaseServerFail
+	}
+
+	return user, oldImageId, nil
 }
 
 func (um *UserManager) ChangePassword(id int, currentPass, newPass string) error {

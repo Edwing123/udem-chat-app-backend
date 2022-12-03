@@ -20,6 +20,12 @@ const (
 	WHERE [Id] = @Id;
 	`
 
+	getUserProfilePictureIdById = `
+	SELECT [Profile_Picture_Id]
+	FROM [User]
+	WHERE [Id] = @Id;
+	`
+
 	getUserPasswordById = `
 	SELECT [Password]
 	FROM [User]
