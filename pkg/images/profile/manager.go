@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/h2non/bimg"
+	"golang.org/x/exp/slog"
 )
 
 // Manager.
@@ -16,6 +17,8 @@ type Manager struct {
 	// the profile manager will store
 	// the images.
 	rootDir string
+
+	logger *slog.Logger
 }
 
 // InitDirs creates the directories where
@@ -94,7 +97,7 @@ func (pm *Manager) New(image Image, crop Crop) (string, error) {
 		return "", ErrImageTypeNotSupported
 	}
 
-	// Optimize the image only if the size is greater than 400KB,
+	// Optimize the image only if the size is greater than max size,
 	// then save the original image.
 	var originalImageBuffer []byte
 	var err error
@@ -102,7 +105,8 @@ func (pm *Manager) New(image Image, crop Crop) (string, error) {
 	if len(image.Buffer) > sizeLimit {
 		originalImageBuffer, err = pm.process(image.Buffer, defaultProcessOptions)
 		if err != nil {
-			return "", ErrImageProccesingFail
+			pm.logger.Error("Process original image", err, "imageType", image.Type)
+			return "", ErrImageProcessFail
 		}
 	}
 
@@ -111,7 +115,8 @@ func (pm *Manager) New(image Image, crop Crop) (string, error) {
 
 	err = pm.save(imageId, "original", originalImageBuffer)
 	if err != nil {
-		return "", err
+		pm.logger.Error("Save original image", err, "imageType", image.Type, "imageId", imageId)
+		return "", ErrImageWriteFail
 	}
 
 	// Crop the image.
@@ -119,6 +124,7 @@ func (pm *Manager) New(image Image, crop Crop) (string, error) {
 
 	imageSize, err := bImage.Size()
 	if err != nil {
+		pm.logger.Error("Get image size", err, "imageType", image.Type, "imageId", imageId)
 		return "", ErrCannotGetImageSize
 	}
 
@@ -127,6 +133,8 @@ func (pm *Manager) New(image Image, crop Crop) (string, error) {
 	// in pixels based on the image size.
 	cropInPixels := percentageCropToPixelsCrop(crop, imageSize)
 
+	// The crop has a 1:1 aspect ratio, that's why
+	// the width is set as both the width and height.
 	croppedImageBuffer, err := bImage.Process(bimg.Options{
 		Width:  cropInPixels.Width,
 		Height: cropInPixels.Width,
@@ -135,26 +143,28 @@ func (pm *Manager) New(image Image, crop Crop) (string, error) {
 		Crop:   true,
 	})
 	if err != nil {
-		return "", ErrImageProccesingFail
+		pm.logger.Error("Process image crop", err, "imageType", image.Type, "imageId", imageId)
+		return "", ErrImageProcessFail
 	}
 
 	// Resize the image.
-	croppedImageBuffer, err = bimg.NewImage(croppedImageBuffer).Resize(400, 400)
+	croppedAndResizedImageBuffer, err := bimg.NewImage(croppedImageBuffer).Resize(400, 400)
 	if err != nil {
-		return "", ErrImageProccesingFail
+		pm.logger.Error("Process image resize", err, "imageType", image.Type, "imageId", imageId)
+		return "", ErrImageProcessFail
 	}
 
 	// Convert the cropped and resized image to the remaining formats.
 	images := []Image{
 		{
 			Type:   image.Type,
-			Buffer: croppedImageBuffer,
+			Buffer: croppedAndResizedImageBuffer,
 		},
 	}
 
 	convertedImages, err := pm.convert(images[0])
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 
 	images = append(images, convertedImages...)
@@ -165,6 +175,7 @@ func (pm *Manager) New(image Image, crop Crop) (string, error) {
 
 		err := pm.save(imageId, path.Join(activeDir, typeName), image.Buffer)
 		if err != nil {
+			pm.logger.Error("Save image", err, "imageType", image.Type, "imageId", imageId)
 			return "", err
 		}
 	}
@@ -197,6 +208,7 @@ func (pm *Manager) convert(image Image) ([]Image, error) {
 
 		convertedImageBuffer, err := bimg.Convert(format)
 		if err != nil {
+			pm.logger.Error("Convert image", err, "imageType", format)
 			return nil, ErrImageConvertionFail
 		}
 
@@ -253,6 +265,7 @@ func (pm *Manager) Archive(id string) error {
 		)
 
 		if err != nil {
+			pm.logger.Error("Archive image", err, "imageId", id)
 			return err
 		}
 	}

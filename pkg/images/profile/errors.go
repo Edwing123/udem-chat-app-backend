@@ -1,10 +1,14 @@
 package profile
 
-import "errors"
+import (
+	"github.com/Edwing123/udem-chat-app/pkg/codes"
+)
 
 var (
-	ErrImageTypeNotSupported = errors.New("image type not supported")
-	ErrImageProccesingFail   = errors.New("image processing fail")
-	ErrCannotGetImageSize    = errors.New("cannot get image size")
-	ErrImageConvertionFail   = errors.New(("image convertion fail"))
+	ErrImageTypeNotSupported = codes.NewCode("image_type_not_supported")
+	ErrImageProcessFail      = codes.NewCode("image_process_fail")
+	ErrCannotGetImageSize    = codes.NewCode("cannot_get_image_size")
+	ErrImageConvertionFail   = codes.NewCode(("image_convertion_fail"))
+	ErrImageWriteFail        = codes.NewCode(("image_write_fail"))
+	ErrImageArchiveFail      = codes.NewCode(("image_archive_fail"))
 )

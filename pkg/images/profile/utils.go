@@ -2,6 +2,7 @@ package profile
 
 import (
 	"github.com/h2non/bimg"
+	"golang.org/x/exp/slog"
 )
 
 // Returns true if imageType is a supported,
@@ -21,10 +22,12 @@ func IsImageTypeNameSupported(imageType string) bool {
 }
 
 // Creates a new profile manager which will save
-// profile images on the file system under the provided dir.
-func New(dir string) Manager {
+// profile images on the file system under the provided dir
+// and will log messages using the provided logger.
+func New(dir string, logger *slog.Logger) Manager {
 	return Manager{
 		rootDir: dir,
+		logger:  logger,
 	}
 }
 
