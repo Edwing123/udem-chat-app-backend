@@ -90,12 +90,13 @@ func (um *UserManager) Get(id int) (models.User, error) {
 	)
 
 	var user models.User
+	var nullableImageId sql.NullString
 
 	err := row.Scan(
 		&user.Id,
 		&user.Name,
 		&user.Birthdate,
-		&user.ProfilePictureId,
+		&nullableImageId,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -104,6 +105,10 @@ func (um *UserManager) Get(id int) (models.User, error) {
 
 		um.logger.Error("Get user", err, "userId", id)
 		return user, models.ErrDatabaseServerFail
+	}
+
+	if nullableImageId.Valid {
+		user.ProfilePictureId = nullableImageId.String
 	}
 
 	return user, nil
@@ -216,10 +221,16 @@ func (um *UserManager) Update(id int, user models.User) (models.User, string, er
 	if user.ProfilePictureId != "" {
 		row := tx.QueryRowContext(rootCtx, getUserProfilePictureIdById, sql.Named(userId, id))
 
-		err = row.Scan(&oldImageId)
+		var nullableImageId sql.NullString
+
+		err = row.Scan(&nullableImageId)
 		if err != nil {
 			um.logger.Error("Update user - select current picture id", err)
 			return models.User{}, "", models.ErrDatabaseServerFail
+		}
+
+		if nullableImageId.Valid {
+			oldImageId = nullableImageId.String
 		}
 	}
 
