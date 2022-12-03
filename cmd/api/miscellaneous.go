@@ -198,11 +198,7 @@ func ValidateAddr(addr string) error {
 // application will be stored.
 func CreateAppDataDirs(appDataPath string) error {
 	stats, err := os.Stat(appDataPath)
-
-	// Return an error if it does exist but it's not a directory.
-	if err == nil && !stats.IsDir() {
-		return fmt.Errorf("%s already exists, but it's not a directory", appDataPath)
-	} else {
+	if err != nil {
 		// Create it if it doesn't exist.
 		if errors.Is(err, os.ErrNotExist) {
 			err := os.MkdirAll(appDataPath, 0o755)
@@ -210,9 +206,11 @@ func CreateAppDataDirs(appDataPath string) error {
 				return err
 			}
 		} else {
-			// TODO: investigate what other errors can happen here.
 			return err
 		}
+	} else if !stats.IsDir() {
+		// Return an error if it does exist but it's not a directory.
+		return fmt.Errorf("%s already exists, but it's not a directory", appDataPath)
 	}
 
 	// Create logs and images directories.
