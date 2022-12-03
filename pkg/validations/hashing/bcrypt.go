@@ -1,6 +1,13 @@
 package hashing
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"github.com/Edwing123/udem-chat-app/pkg/codes"
+	"golang.org/x/crypto/bcrypt"
+)
+
+var (
+	ErrPasswordHashingFail = codes.NewCode("password_hashing_fail")
+)
 
 // HashPassword creates the bcrypt hash of the password.
 // On success it returns the hashed password and a nil error, and on failure,
