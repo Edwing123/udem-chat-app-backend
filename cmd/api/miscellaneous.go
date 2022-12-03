@@ -43,10 +43,22 @@ func SendSucessMessage[T any](c *fiber.Ctx, status int, data T) error {
 }
 
 // Parses the body of the request.
-func ReadJSONBody[T any](c *fiber.Ctx) (T, error) {
+func ReadBodyFromRequest[T any](c *fiber.Ctx) (T, error) {
 	var v T
 
 	err := c.BodyParser(&v)
+	if err != nil {
+		return v, err
+	}
+
+	return v, nil
+}
+
+// Parses the body of the request.
+func ReadJSONBody[T any](body []byte) (T, error) {
+	var v T
+
+	err := json.Unmarshal(body, &v)
 	if err != nil {
 		return v, err
 	}
