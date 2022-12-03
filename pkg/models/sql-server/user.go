@@ -24,12 +24,6 @@ func isUserNameExistsError(err error) bool {
 	return strings.Contains(sqlErr.Message, "Unique_User_Name")
 }
 
-func isUserProfilePictureIdexistsError(err error) bool {
-	var sqlErr mssql.Error
-	_ = errors.As(err, &sqlErr)
-	return strings.Contains(sqlErr.Message, "Unique_User_Profile_Picture_Id")
-}
-
 func isValidBirthdateFormat(birthdate string) bool {
 	_, err := time.Parse(models.UserBirthdateFormat, birthdate)
 	return err == nil
@@ -78,8 +72,8 @@ func (um *UserManager) New(user models.User) error {
 		if isUserNameExistsError(err) {
 			err = models.ErrUserNameExists
 		} else {
-			err = models.ErrDatabaseServerFail
 			um.logger.Error("New user", err, "name", user.Name, "birthdate", user.Birthdate)
+			err = models.ErrDatabaseServerFail
 		}
 
 		return err
@@ -237,8 +231,6 @@ func (um *UserManager) Update(id int, user models.User) (models.User, string, er
 	if err != nil {
 		if isUserNameExistsError(err) {
 			err = models.ErrUserNameExists
-		} else if isUserProfilePictureIdexistsError(err) {
-			err = models.ErrUserProfilePictureIdExists
 		} else {
 			err = models.ErrDatabaseServerFail
 			um.logger.Error(

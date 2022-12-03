@@ -21,9 +21,6 @@ CREATE TABLE [User] (
 
     -- Username must be unique.
     CONSTRAINT [Unique_User_Name] UNIQUE (Name),
-
-    -- The of the profile picture must be unique.
-    CONSTRAINT [Unique_User_Profile_Picture_Id] UNIQUE (Profile_Picture_Id)
 )
 GO
 

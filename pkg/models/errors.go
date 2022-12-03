@@ -9,7 +9,6 @@ var (
 	ErrUserPasswordEmpty                  = codes.NewCode("user_password_empty")
 	ErrUserBirthdateEmpty                 = codes.NewCode("user_birthdate_empty")
 	ErrUserBirthdateBadFormat             = codes.NewCode("user_birthdate_bad_format")
-	ErrUserProfilePictureIdExists         = codes.NewCode("user_profile_picture_id_exists")
 	ErrUserNameExceedsMaxLength           = codes.NewCode("user_name_exceeds_max_length")
 	ErrUserPasswordNotValidLength         = codes.NewCode("user_password_not_valid_length")
 	ErrUserProfilePictureIdNotValidLength = codes.NewCode("user_profile_picture_id_not_valid_length")
