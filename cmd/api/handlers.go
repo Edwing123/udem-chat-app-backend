@@ -4,25 +4,29 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Edwing123/udem-chat-app/pkg/codes"
 	"github.com/Edwing123/udem-chat-app/pkg/models"
+	"github.com/Edwing123/udem-chat-app/pkg/validations/hashing"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Handler for authenticating user.
 func (g *Global) UserLogIn(c *fiber.Ctx) error {
-	credentials, err := ReadJSONBody[models.User](c)
+	credentials, err := ReadBodyFromRequest[models.User](c)
 	if err != nil {
-		return SendErrorMessage(c, fiber.StatusBadRequest, codes.ErrClient, err)
+		return SendErrorMessage(c, fiber.StatusBadRequest, ErrCannotDecodeJSON, err)
 	}
 
 	id, err := g.Database.UserManager.Login(credentials)
 	if err != nil {
-		if errors.Is(err, codes.ErrLoginFail) {
-			return SendErrorMessage(c, fiber.StatusUnauthorized, codes.ErrLoginFail, err)
+		if errors.Is(err, models.ErrLoginFail) {
+			return SendErrorMessage(c, fiber.StatusUnauthorized, err, "")
 		}
 
-		return g.ServerError(c, err)
+		if errors.Is(err, models.ErrDatabaseServerFail) {
+			return g.ServerError(c, nil)
+		}
+
+		return SendErrorMessage(c, fiber.StatusBadRequest, err, "")
 	}
 
 	// Save user id and status inside its session.
@@ -49,9 +53,9 @@ func (g *Global) UserLogout(c *fiber.Ctx) error {
 
 // Handler for signing up a new user.
 func (g *Global) UserSignUp(c *fiber.Ctx) error {
-	user, err := ReadJSONBody[models.User](c)
+	user, err := ReadBodyFromRequest[models.User](c)
 	if err != nil {
-		return SendErrorMessage(c, fiber.StatusBadRequest, codes.ErrClient, err)
+		return SendErrorMessage(c, fiber.StatusBadRequest, ErrCannotDecodeJSON, err.Error())
 	}
 
 	err = ValidatePassword(user.Password)
@@ -59,23 +63,27 @@ func (g *Global) UserSignUp(c *fiber.Ctx) error {
 		return SendErrorMessage(
 			c,
 			fiber.StatusBadRequest,
-			codes.ErrPasswordNotValid,
+			ErrPasswordNotValid,
 			"Contraseña no cumple las reglas de validacion",
 		)
 	}
 
 	err = g.Database.UserManager.New(user)
 	if err != nil {
-		if errors.Is(err, codes.ErrUserNameAlreadyExists) {
+		if errors.Is(err, models.ErrUserNameExists) {
 			return SendErrorMessage(
 				c,
 				fiber.StatusConflict,
-				codes.ErrUserNameAlreadyExists,
+				err,
 				fmt.Sprintf("Usuario %s ya existe", user.Name),
 			)
 		}
 
-		return g.ServerError(c, err)
+		if errors.Is(err, models.ErrDatabaseServerFail) || errors.Is(err, hashing.ErrPasswordHashingFail) {
+			return g.ServerError(c, nil)
+		}
+
+		return SendErrorMessage(c, fiber.StatusBadRequest, err, "")
 	}
 
 	return SendSucessMessage(c, fiber.StatusCreated, "Usuario registrado")
@@ -85,13 +93,9 @@ func (g *Global) UserSignUp(c *fiber.Ctx) error {
 // whether or not it's logged-in.
 func (g *Global) UserStatus(c *fiber.Ctx) error {
 	sess := g.GetSession(c)
-	userId, ok := sess.Get(UserIdKey).(int)
-
-	if !ok {
-		return SendErrorMessage(c, fiber.StatusBadRequest, codes.ErrNotLoggedIn, "")
-	}
+	isLoggedIn, _ := sess.Get(IsLoggedInKey).(bool)
 
 	return SendSucessMessage(c, fiber.StatusOK, fiber.Map{
-		"id": userId,
+		"isActive": isLoggedIn,
 	})
 }
