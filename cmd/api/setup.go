@@ -33,7 +33,7 @@ func (g *Global) Setup() *fiber.App {
 	user.Post("/login", g.UserLogIn)
 	user.Post("/signup", g.UserSignUp)
 	user.Post("/logout", g.RequireAuth, g.UserLogout)
-	user.Post("/status", g.UserStatus)
+	user.Get("/status", g.UserStatus)
 
 	// TODO: remove later.
 	api.Get("/hello", func(c *fiber.Ctx) error {
