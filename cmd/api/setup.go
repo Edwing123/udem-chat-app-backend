@@ -34,6 +34,7 @@ func (g *Global) Setup() *fiber.App {
 	user.Post("/signup", g.UserSignUp)
 	user.Post("/logout", g.RequireAuth, g.UserLogout)
 	user.Get("/status", g.UserStatus)
+	user.Patch("/update", g.RequireAuth, g.UserUpdate)
 
 	// TODO: remove later.
 	api.Get("/hello", func(c *fiber.Ctx) error {
