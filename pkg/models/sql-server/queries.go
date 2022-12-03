@@ -20,12 +20,6 @@ const (
 	WHERE [Id] = @Id;
 	`
 
-	getUserByName = `
-	SELECT [Name]
-	FROM [User]
-	WHERE [Name] = @Name;
-	`
-
 	getUserPasswordById = `
 	SELECT [Password]
 	FROM [User]
