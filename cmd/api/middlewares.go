@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/Edwing123/udem-chat-app/pkg/codes"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -20,7 +19,7 @@ func (g *Global) RequireAuth(c *fiber.Ctx) error {
 		return SendErrorMessage(
 			c,
 			fiber.StatusUnauthorized,
-			codes.ErrAuthRequired,
+			ErrAuthRequired,
 			"Autenticacion requerida",
 		)
 	}
