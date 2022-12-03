@@ -77,7 +77,7 @@ func main() {
 	}()
 
 	// Setup profile manager.
-	profileManager := profile.New(path.Join(config.AppData, "images"))
+	profileManager := profile.New(path.Join(config.AppData, "images"), logger)
 	err = profileManager.InitDirs()
 	if err != nil {
 		fmt.Println("An error occured while creating profile manager dirs:")
@@ -103,7 +103,7 @@ func main() {
 
 	// Create an implementation of `models.Database` using
 	// SQL Server as the database.
-	databaseImpl := sqlserver.New(sqldb)
+	databaseImpl := sqlserver.New(sqldb, logger)
 
 	global := Global{
 		Logger:         logger,
