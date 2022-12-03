@@ -11,7 +11,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/Edwing123/udem-chat-app/pkg/codes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 )
@@ -22,7 +21,7 @@ func (g *Global) GetSession(c *fiber.Ctx) *session.Session {
 
 // Helper function to create server errors.
 func (g *Global) ServerError(c *fiber.Ctx, err error) error {
-	return SendErrorMessage(c, fiber.StatusInternalServerError, codes.ErrServerInternal, err)
+	return SendErrorMessage(c, fiber.StatusInternalServerError, ErrServerInternal, err)
 }
 
 // Helper function to create error response message.
@@ -70,22 +69,24 @@ func ValidatePassword(password string) error {
 	// Trim leading and trailing whitespace.
 	password = strings.Trim(password, " ")
 
+	var err error
+
 	// Must have 8 character or more.
 	if len(password) <= 8 {
-		return codes.ErrPasswordNotValid
+		err = ErrPasswordNotValid
 	}
 
 	// Must have at least one digit.
 	if !strings.ContainsAny(password, "0123456789") {
-		return codes.ErrPasswordNotValid
+		err = ErrPasswordNotValid
 	}
 
 	// Must have at least one special character.
 	if !strings.ContainsAny(password, "@$#") {
-		return codes.ErrPasswordNotValid
+		err = ErrPasswordNotValid
 	}
 
-	return nil
+	return err
 }
 
 // Reads the JSON configuration file from the provided
