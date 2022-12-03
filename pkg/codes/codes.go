@@ -11,15 +11,3 @@ type Code string
 func (c Code) Error() string {
 	return string(c)
 }
-
-var (
-	// Server related.
-	ErrServerInternal = NewCode("server_internal")
-
-	// Client related.
-	ErrCannotDecodeJSON = NewCode(("cannot_decode_json"))
-	ErrAuthRequired     = NewCode("auth_required")
-
-	// Validation related.
-	ErrPasswordNotValid = NewCode("password_not_valid")
-)
