@@ -4,12 +4,9 @@ GO
 CREATE TABLE [User] (
     [Id] INT IDENTITY(1, 1) PRIMARY KEY,
 
-    -- The user name is unique because it will
-    -- be used as a credential.
-    [Name] NVARCHAR(40) NOT NULL UNIQUE,
+    [Name] NVARCHAR(40) NOT NULL,
 
-    -- I guess this shouldn't be mentioned here.
-    -- The length of the password is 60 bytes
+    -- The length of the password is 60 characters
     -- long because the plain text password will be
     -- hashed using the hashing algorithm Bcrypt.
     [Password] CHAR(60) NOT NULL,
@@ -17,10 +14,16 @@ CREATE TABLE [User] (
     [Birthdate] DATE NOT NULL,
 
     -- a UUID has a size of 36 characters.
-    [Profile_Picture_Id] CHAR(36) UNIQUE DEFAULT '',
+    [Profile_Picture_Id] CHAR(36) NULL,
 
     -- Username must not be empty.
-    CONSTRAINT [Check_User_Name_Not_Empty] CHECK (LEN(Name) > 0)
+    CONSTRAINT [Check_User_Name_Not_Empty] CHECK (LEN(Name) > 0),
+
+    -- Username must be unique.
+    CONSTRAINT [Unique_User_Name] UNIQUE (Name),
+
+    -- The of the profile picture must be unique.
+    CONSTRAINT [Unique_User_Profile_Picture_Id] UNIQUE (Profile_Picture_Id)
 )
 GO
 
@@ -42,14 +45,14 @@ CREATE TABLE [Message] (
 
     [Created_At] DATETIME NOT NULL,
 
-    -- The maximum of characters per message.
+    -- 300 is the maximum of characters per message.
     [Content] NVARCHAR(300) NOT NULL,
 
     [User_Id] INT NOT NULL,
 
     [Conversation_Id] INT NOT NULL,
 
-    -- Foreigh key references.
+    -- Foreign key references.
     CONSTRAINT [Foreign_Message_User_Id] FOREIGN KEY (User_Id) REFERENCES [User](Id),
     CONSTRAINT [Foreign_Message_Conversation_Id] FOREIGN KEY (Conversation_Id) REFERENCES [Conversation](Id),
 
@@ -65,7 +68,7 @@ CREATE TABLE [User_Join_Conversation] (
 
     [Conversation_Id] INT NOT NULL,
 
-    -- Foreigh key references.
+    -- Foreign key references.
     CONSTRAINT [Foreign_User_Join_Conversation_User_Id] FOREIGN KEY (User_Id) REFERENCES [User](Id),
     CONSTRAINT [Foreign_User_Join_Conversation_Conversation_Id] FOREIGN KEY (Conversation_Id) REFERENCES [Conversation](Id)
 )
